@@ -1,7 +1,9 @@
+(* Single encoded code points. *)
 type utf8
 type utf16
 type utf32 = private int
 
+(* Encoded unicode strings *)
 type utf8s = private string
 type utf16s = private int list
 type utf32s = private int list
