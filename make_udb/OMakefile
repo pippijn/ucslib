@@ -4,6 +4,7 @@ Target		= make_udb
 # Sources
 Modules[] =
 	Make_udb
+	UcsTest
 	Udb_lexer
 
 # Library dependencies

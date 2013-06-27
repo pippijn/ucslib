@@ -29,3 +29,5 @@ let () =
     let out = open_out outfile in
     dump out ucd;
     close_out out
+  else
+    UcsTest.test ()
