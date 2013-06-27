@@ -52,23 +52,29 @@ let is_trail_surrogate code =
 let is_surrogate code =
   code >= lead_surrogate_min && code <= trail_surrogate_max
 
+let is_trail_byte c =
+  Char.code c lsr 6 = 2
+
 
 
 (*************************************************
  * :: Convert between single character and string
  *************************************************)
 
-let utf8_of_utf8s : utf8s -> utf8 = fun s ->
-  match String.length s with
-  | 1 -> Utf8_1 (s.[0])
-  | 2 -> Utf8_2 (s.[0], s.[1])
-  | 3 -> Utf8_3 (s.[0], s.[1], s.[2])
-  | 4 -> Utf8_4 (s.[0], s.[1], s.[2], s.[3])
-  | 5 -> Utf8_5 (s.[0], s.[1], s.[2], s.[3], s.[4])
-  | 6 -> Utf8_6 (s.[0], s.[1], s.[2], s.[3], s.[4], s.[5])
+let utf8_of_substring : int -> int -> utf8s -> utf8 = fun i l s ->
+  match l with
+  | 1 -> Utf8_1 (s.[i + 0])
+  | 2 -> Utf8_2 (s.[i + 0], s.[i + 1])
+  | 3 -> Utf8_3 (s.[i + 0], s.[i + 1], s.[i + 2])
+  | 4 -> Utf8_4 (s.[i + 0], s.[i + 1], s.[i + 2], s.[i + 3])
+  | 5 -> Utf8_5 (s.[i + 0], s.[i + 1], s.[i + 2], s.[i + 3], s.[i + 4])
+  | 6 -> Utf8_6 (s.[i + 0], s.[i + 1], s.[i + 2], s.[i + 3], s.[i + 4], s.[i + 5])
   | _ -> failwith "utf8_of_utf8s"
 
-let list_of_utf8 : utf8 -> char list = function
+let utf8_of_utf8s : utf8s -> utf8 = fun s ->
+  utf8_of_substring 0 (String.length s) s
+
+let charlist_of_utf8 : utf8 -> char list = function
   | Utf8_1 (s0) -> [s0]
   | Utf8_2 (s0, s1) -> [s0; s1]
   | Utf8_3 (s0, s1, s2) -> [s0; s1; s2]
@@ -76,17 +82,17 @@ let list_of_utf8 : utf8 -> char list = function
   | Utf8_5 (s0, s1, s2, s3, s4) -> [s0; s1; s2; s3; s4]
   | Utf8_6 (s0, s1, s2, s3, s4, s5) -> [s0; s1; s2; s3; s4; s5]
 
-let utf8_of_list : char list -> utf8 = function
+let utf8_of_charlist : char list -> utf8 = function
   | [s0] -> Utf8_1 (s0)
   | [s0; s1] -> Utf8_2 (s0, s1)
   | [s0; s1; s2] -> Utf8_3 (s0, s1, s2)
   | [s0; s1; s2; s3] -> Utf8_4 (s0, s1, s2, s3)
   | [s0; s1; s2; s3; s4] -> Utf8_5 (s0, s1, s2, s3, s4)
   | [s0; s1; s2; s3; s4; s5] -> Utf8_6 (s0, s1, s2, s3, s4, s5)
-  | _ -> failwith "utf8_of_list"
+  | _ -> failwith "utf8_of_charlist"
 
 let utf8s_of_utf8 : utf8 -> utf8s = fun utf8 ->
-  BatString.of_list (list_of_utf8 utf8)
+  BatString.of_list (charlist_of_utf8 utf8)
 
 
 let utf16_of_utf16s : utf16s -> utf16 = function
@@ -267,7 +273,7 @@ let utf8_length c =
 
 
 let utf32_of_utf8_rev chars =
-  utf32_of_utf8 (utf8_of_list (List.rev chars))
+  utf32_of_utf8 (utf8_of_charlist (List.rev chars))
 
 
 let rec next_utf32 (state, cps) c =
@@ -301,7 +307,7 @@ let utf32s_of_utf8s s =
  *************************************************)
 
 let utf16s_rev_of_charlist_rev chars =
-  match utf16_of_utf8 (utf8_of_list (List.rev chars)) with
+  match utf16_of_utf8 (utf8_of_charlist (List.rev chars)) with
   | Utf16_1 (cp) -> [cp]
   | Utf16_2 (lead, trail) -> [trail; lead]
 
@@ -418,7 +424,7 @@ let utf16s_of_utf8 utf8 =
   utf16s_of_utf32 (utf32_of_utf8 utf8)
 
 
-let string_of_utf8 = function
+let xstring_of_utf8 = function
   | Utf8_1 (s0) -> Printf.sprintf "[%02x]" (Char.code s0)
   | Utf8_2 (s0, s1) -> Printf.sprintf "[%02x; %02x]" (Char.code s0) (Char.code s1)
   | Utf8_3 (s0, s1, s2) -> Printf.sprintf "[%02x; %02x; %02x]" (Char.code s0) (Char.code s1) (Char.code s2)
@@ -426,7 +432,7 @@ let string_of_utf8 = function
   | Utf8_5 (s0, s1, s2, s3, s4) -> Printf.sprintf "[%02x; %02x; %02x; %02x; %02x]" (Char.code s0) (Char.code s1) (Char.code s2) (Char.code s3) (Char.code s4)
   | Utf8_6 (s0, s1, s2, s3, s4, s5) -> Printf.sprintf "[%02x; %02x; %02x; %02x; %02x; %02x]" (Char.code s0) (Char.code s1) (Char.code s2) (Char.code s3) (Char.code s4) (Char.code s5)
 
-let string_of_utf8s s =
+let xstring_of_utf8s s =
   let inner =
     BatString.to_list s
     |> List.map Char.code
@@ -435,23 +441,120 @@ let string_of_utf8s s =
   in
   "[" ^ inner ^ "]"
 
-let string_of_utf16 = function
+let xstring_of_utf16 = function
   | Utf16_1 (s0) -> Printf.sprintf "[%04x]" s0
   | Utf16_2 (s0, s1) -> Printf.sprintf "[%04x; %04x]" s0 s1
 
-let string_of_utf16s s =
+let xstring_of_utf16s s =
   let inner =
     List.map (Printf.sprintf "%04x") s
     |> String.concat "; "
   in
   "[" ^ inner ^ "]"
 
-let string_of_utf32 cp =
+let xstring_of_utf32 cp =
   Printf.sprintf "[%04x]" cp
 
-let string_of_utf32s s =
+let xstring_of_utf32s s =
   let inner =
     List.map (Printf.sprintf "%04x") s
     |> String.concat "; "
   in
   "[" ^ inner ^ "]"
+
+
+(* Validation *)
+let rec validate_utf8s i s =
+  if i < String.length s then (
+    assert (not (is_trail_byte s.[i]));
+    let length = utf8_length s.[i] in
+    for j = 1 to length do
+      assert (is_trail_byte s.[i + j])
+    done;
+    validate_utf8s (i + length + 1) s
+  )
+
+let adopt_utf8s s =
+  validate_utf8s 0 s;
+  s
+
+let rec validate_utf16s s =
+  match s with
+  | [] -> ()
+  | [cp] ->
+      assert (not (is_surrogate cp))
+  | lead :: (trail :: s as rest) ->
+      assert (not (is_trail_surrogate lead));
+      if is_lead_surrogate lead then (
+        assert (is_trail_surrogate trail);
+        validate_utf16s s
+      ) else (
+        validate_utf16s rest
+      )
+
+let adopt_utf16s s =
+  validate_utf16s s;
+  s
+
+
+let adopt_utf32 cp =
+  assert (cp <= code_point_max);
+  cp
+
+let adopt_utf32s s =
+  List.iter (fun cp ->
+    assert (cp <= code_point_max)
+  ) s;
+  s
+
+
+let string_of_utf8   = utf8s_of_utf8
+let string_of_utf8s  = BatPervasives.identity
+let string_of_utf16  = utf8s_of_utf16
+let string_of_utf16s = utf8s_of_utf16s
+let string_of_utf32  = utf8s_of_utf32
+let string_of_utf32s = utf8s_of_utf32s
+
+
+let utf8s_of_list l =
+  List.rev_map utf8s_of_utf8 l
+  |> List.rev
+  |> String.concat ""
+
+
+let rec list_of_utf8s i l s =
+  if i = String.length s then
+    l
+  else
+    let length = utf8_length s.[i] + 1 in
+    let utf8 = utf8_of_substring i length s in
+    list_of_utf8s (i + length) (utf8 :: l) s
+
+
+let list_of_utf8s s =
+  List.rev (list_of_utf8s 0 [] s)
+
+
+let utf16s_of_list l =
+  List.rev_map utf16s_of_utf16 l
+  |> List.rev
+  |> List.flatten
+
+
+let rec list_of_utf16s l s =
+  match s with
+  | [] -> l
+  | [cp] -> Utf16_1 (cp) :: l
+  | lead :: (trail :: s as rest) ->
+      if is_lead_surrogate lead then (
+        list_of_utf16s (Utf16_2 (lead, trail) :: l) s
+      ) else (
+        list_of_utf16s (Utf16_1 (lead) :: l) rest
+      )
+
+let list_of_utf16s s =
+  list_of_utf16s [] s
+
+
+let utf32s_of_list = BatPervasives.identity
+let list_of_utf32s = BatPervasives.identity
