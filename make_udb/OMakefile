@@ -1,0 +1,14 @@
+# Target
+Target		= make_udb
+
+# Sources
+Modules[] =
+	Make_udb
+	Udb_lexer
+
+# Library dependencies
+Requires[] =
+	batteries
+	ucs
+
+ocaml-program ()

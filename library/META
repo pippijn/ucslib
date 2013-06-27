@@ -1,9 +1,0 @@
-# OASIS_START
-# DO NOT EDIT (digest: bfa721d79051de840643117fc657b191)
-version = "0.6"
-description = "Small unicode library"
-archive(byte) = "ucs.cma"
-archive(native) = "ucs.cmxa"
-exists_if = "ucs.cma"
-# OASIS_STOP
-

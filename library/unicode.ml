@@ -45,7 +45,7 @@ let utf8_char chr =
     else
       raise (Invalid_argument "utf8_char")
   in
-  ExString.of_list chars
+  BatString.of_list chars
 
 
 let utf32_char = function
@@ -69,14 +69,14 @@ let utf32_char = function
       (((c4 land 0xff) lsl (6 * 1)) land 0x00000fff) +
       (((c3 land 0xff) lsl (6 * 2)) land 0x0000ffff) +
       (((c2 land 0xff) lsl (6 * 3)) land 0x001fffff) +
-      (((c1 land 0xff) lsl (6 * 3)) land 0x03ffffff)
+      (((c1 land 0xff) lsl (6 * 4)) land 0x03ffffff)
   | [c1; c2; c3; c4; c5; c6] ->
       (((c6 land 0xff) lsl (6 * 0)) land 0x0000003f) +
       (((c5 land 0xff) lsl (6 * 1)) land 0x00000fff) +
       (((c4 land 0xff) lsl (6 * 2)) land 0x0000ffff) +
       (((c3 land 0xff) lsl (6 * 3)) land 0x001fffff) +
-      (((c2 land 0xff) lsl (6 * 3)) land 0x03ffffff) +
-      (((c1 land 0xff) lsl (6 * 3)) land 0x7fffffff)
+      (((c2 land 0xff) lsl (6 * 4)) land 0x03ffffff) +
+      (((c1 land 0xff) lsl (6 * 5)) land 0x7fffffff)
   | _ -> failwith "utf32_char"
 
 
@@ -109,7 +109,7 @@ let utf32_of_utf8 s =
         Initial, utf32_char [d] :: utf32
   in
 
-  match ExString.fold_left next_utf32 (Initial, []) s with
+  match BatString.fold_left next_utf32 (Initial, []) s with
   | Initial, utf32 ->
       List.rev utf32
   | Continuation (0, chars), utf32 ->

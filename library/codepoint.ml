@@ -72,20 +72,27 @@ type character_decomposition_mapping =
   | Compat
 
 
+type canonical_combining_class = int
+type decimal_digit_value = string option
+type digit_value = string option
+type numeric_value = string option
+type unicode_1_0_name = string option
+type case_mapping = int option
+
 type t = {
-  codepoint : int;
-  character_name : string option;
-  general_category : general_category;
-  canonical_combining_classes : int;
-  bidirectional_category : bidirectional_category;
-  character_decomposition_mapping : (character_decomposition_mapping * int list) option;
-  decimal_digit_value : string option;
-  digit_value : string option;
-  numeric_value : string option;
+  code : int; (* codepoint *)
+  name : string option; (* character_name *)
+  gc : general_category;
+  ccc : canonical_combining_class;
+  bc : bidirectional_category;
+  cdm : (character_decomposition_mapping * int list) option;
+  dec : decimal_digit_value;
+  dig : digit_value;
+  num : numeric_value;
   mirrored : bool;
-  unicode_1_0_name : string option;
+  uni10 : unicode_1_0_name;
   comment : string option;
-  uppercase_mapping : int option;
-  lowercase_mapping : int option;
-  titlecase_mapping : int option;
+  uc : case_mapping; (* uppercase_mapping *)
+  lc : case_mapping; (* lowercase_mapping *)
+  tc : case_mapping; (* titlecase_mapping *)
 }

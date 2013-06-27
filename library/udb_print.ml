@@ -33,25 +33,25 @@ let string_of_general_category = function
 
 
 let string_of_bidirectional_category = function
-  | AL -> "AL"
-  | AN -> "AN"
-  | B -> "B"
-  | BN -> "BN"
-  | CS -> "CS"
-  | EN -> "EN"
-  | ES -> "ES"
-  | ET -> "ET"
-  | L -> "L"
+  | AL  -> "AL"
+  | AN  -> "AN"
+  | B   -> "B"
+  | BN  -> "BN"
+  | CS  -> "CS"
+  | EN  -> "EN"
+  | ES  -> "ES"
+  | ET  -> "ET"
+  | L   -> "L"
   | LRE -> "LRE"
   | LRO -> "LRO"
   | NSM -> "NSM"
-  | ON -> "ON"
+  | ON  -> "ON"
   | PDF -> "PDF"
-  | R -> "R"
+  | R   -> "R"
   | RLE -> "RLE"
   | RLO -> "RLO"
-  | S -> "S"
-  | WS -> "WS"
+  | S   -> "S"
+  | WS  -> "WS"
 
 
 let rec string_of_int_list = function
@@ -97,38 +97,44 @@ let string_of_codepoint =
 
   function
   {
-    codepoint = codepoint;
-    character_name = character_name;
-    general_category = general_category;
-    canonical_combining_classes = canonical_combining_classes;
-    bidirectional_category = bidirectional_category;
-    character_decomposition_mapping = character_decomposition_mapping;
-    decimal_digit_value = decimal_digit_value;
-    digit_value = digit_value;
-    numeric_value = numeric_value;
+    code = codepoint;
+    name = character_name;
+    gc = general_category;
+    ccc = canonical_combining_classes;
+    bc = bidirectional_category;
+    cdm = character_decomposition_mapping;
+    dec = decimal_digit_value;
+    dig = digit_value;
+    num = numeric_value;
     mirrored = mirrored;
-    unicode_1_0_name = unicode_1_0_name;
+    uni10 = unicode_1_0_name;
     comment = comment;
-    uppercase_mapping = uppercase_mapping;
-    lowercase_mapping = lowercase_mapping;
-    titlecase_mapping = titlecase_mapping;
+    uc = uppercase_mapping;
+    lc = lowercase_mapping;
+    tc = titlecase_mapping;
   } ->
-    Printf.sprintf "{ codepoint = 0x%04x; character_name = %s; general_category = %s; canonical_combining_classes = %d; bidirectional_category = %s; character_decomposition_mapping = %s; decimal_digit_value = %s; digit_value = %s; numeric_value = %s; mirrored = %s; unicode_1_0_name = %s; comment = %s; uppercase_mapping = %s; lowercase_mapping = %s; titlecase_mapping = %s }"
+    Printf.sprintf "{ \
+        code = 0x%04x; gc = %s; ccc = %3d; bc = %3s; \
+        mirrored = %5s; \
+        uc = %s; lc = %s; tc = %s; \
+        dec = %s; dig = %s; num = %s; \
+        cdm =\t%s; \
+        name =\t%s; uni10 =\t%s; comment =\t%s }"
       codepoint
-      (opts character_name)
       (string_of_general_category general_category)
       canonical_combining_classes
       (string_of_bidirectional_category bidirectional_category)
-      (optf string_of_character_decomposition_mapping character_decomposition_mapping)
-      (opts decimal_digit_value)
-      (opts digit_value)
-      (opts numeric_value)
       (string_of_bool mirrored)
-      (opts unicode_1_0_name)
-      (opts comment)
       (opti uppercase_mapping)
       (opti lowercase_mapping)
       (opti titlecase_mapping)
+      (opts decimal_digit_value)
+      (opts digit_value)
+      (opts numeric_value)
+      (optf string_of_character_decomposition_mapping character_decomposition_mapping)
+      (opts character_name)
+      (opts unicode_1_0_name)
+      (opts comment)
 
 
 let csv_of_codepoint =
@@ -149,21 +155,21 @@ let csv_of_codepoint =
   
   function
   {
-    codepoint = codepoint;
-    character_name = character_name;
-    general_category = general_category;
-    canonical_combining_classes = canonical_combining_classes;
-    bidirectional_category = bidirectional_category;
-    character_decomposition_mapping = character_decomposition_mapping;
-    decimal_digit_value = decimal_digit_value;
-    digit_value = digit_value;
-    numeric_value = numeric_value;
+    code = codepoint;
+    name = character_name;
+    gc = general_category;
+    ccc = canonical_combining_classes;
+    bc = bidirectional_category;
+    cdm = character_decomposition_mapping;
+    dec = decimal_digit_value;
+    dig = digit_value;
+    num = numeric_value;
     mirrored = mirrored;
-    unicode_1_0_name = unicode_1_0_name;
+    uni10 = unicode_1_0_name;
     comment = comment;
-    uppercase_mapping = uppercase_mapping;
-    lowercase_mapping = lowercase_mapping;
-    titlecase_mapping = titlecase_mapping;
+    uc = uppercase_mapping;
+    lc = lowercase_mapping;
+    tc = titlecase_mapping;
   } ->
     Printf.sprintf "%04x;%s;%s;%d;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s"
       codepoint
