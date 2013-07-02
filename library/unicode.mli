@@ -8,6 +8,9 @@ type utf8s = private string
 type utf16s = private int list
 type utf32s = private int list
 
+(* The number of trailing octets *)
+val utf8_length : char -> int
+
 (* Validate representation *)
 val adopt_utf32 : int -> utf32
 
