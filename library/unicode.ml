@@ -1,4 +1,5 @@
-let (|>) = BatPervasives.(|>)
+let (|>) = BasePervasives.(|>)
+let identity = BasePervasives.identity
 
 (*************************************************
  * :: Types
@@ -92,7 +93,7 @@ let utf8_of_charlist : char list -> utf8 = function
   | _ -> failwith "utf8_of_charlist"
 
 let utf8s_of_utf8 : utf8 -> utf8s = fun utf8 ->
-  BatString.of_list (charlist_of_utf8 utf8)
+  CoreString.of_list (charlist_of_utf8 utf8)
 
 
 let utf16_of_utf16s : utf16s -> utf16 = function
@@ -291,7 +292,7 @@ let rec next_utf32 (state, cps) c =
 
 let utf32s_of_utf8s s =
   let utf32 =
-    match BatString.fold_left next_utf32 (Initial, []) s with
+    match CoreString.fold_left next_utf32 (Initial, []) s with
     | Initial, utf32 ->
         utf32
     | Continuation (0, chars), utf32 ->
@@ -327,7 +328,7 @@ let rec next_utf16 : (utf8_state * utf16s) -> char -> (utf8_state * utf16s) = fu
 
 let utf16s_of_utf8s : utf8s -> utf16s = fun s ->
   let utf16 =
-    match BatString.fold_left next_utf16 (Initial, []) s with
+    match CoreString.fold_left next_utf16 (Initial, []) s with
     | Initial, utf16 ->
         utf16
     | Continuation (0, chars), utf16 ->
@@ -434,7 +435,7 @@ let xstring_of_utf8 = function
 
 let xstring_of_utf8s s =
   let inner =
-    BatString.to_list s
+    CoreString.to_list s
     |> List.map Char.code
     |> List.map (Printf.sprintf "%02x")
     |> String.concat "; "
@@ -509,7 +510,7 @@ let adopt_utf32s s =
 
 
 let string_of_utf8   = utf8s_of_utf8
-let string_of_utf8s  = BatPervasives.identity
+let string_of_utf8s  = identity
 let string_of_utf16  = utf8s_of_utf16
 let string_of_utf16s = utf8s_of_utf16s
 let string_of_utf32  = utf8s_of_utf32
@@ -556,5 +557,5 @@ let list_of_utf16s s =
   list_of_utf16s [] s
 
 
-let utf32s_of_list = BatPervasives.identity
-let list_of_utf32s = BatPervasives.identity
+let utf32s_of_list = identity
+let list_of_utf32s = identity

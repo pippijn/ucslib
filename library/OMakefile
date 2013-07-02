@@ -13,6 +13,6 @@ Modules[] =
 
 # Library dependencies
 OCaml-Requires[] =
-  batteries
+  corelib
 
 library (.DEFAULT)
