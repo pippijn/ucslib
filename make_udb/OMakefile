@@ -3,13 +3,13 @@ Target		= make_udb
 
 # Sources
 Modules[] =
-	Make_udb
-	UcsTest
-	Udb_lexer
+  Make_udb
+  UcsTest
+  Udb_lexer
 
 # Library dependencies
-Requires[] =
-	batteries
-	ucs
+OCaml-Requires[] =
+  batteries
+  ucs
 
-ocaml-program ()
+program (.DEFAULT)
