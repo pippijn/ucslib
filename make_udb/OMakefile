@@ -1,5 +1,5 @@
 # Target
-Target		= make_udb
+Name		= make_udb
 
 # Sources
 Modules[] =
@@ -12,4 +12,4 @@ OCaml-Requires[] =
   batteries
   ucs
 
-program (.DEFAULT)
+program-install (.DEFAULT)
