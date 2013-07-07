@@ -1,4 +1,4 @@
-install Library ".DEFAULT" [
+install Package ".DEFAULT" [
   (* Target *)
   Name		"ucs";
   Description	"Small unicode library";

@@ -1,5 +1,4 @@
-let (|>) = BasePervasives.(|>)
-let identity = BasePervasives.identity
+open CorePervasives
 
 (*************************************************
  * :: Types

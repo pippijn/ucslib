@@ -1,4 +1,4 @@
-let (|>) = BatPervasives.(|>)
+open CorePervasives
 
 
 let uniescape s =
@@ -18,9 +18,9 @@ let show _ _ = ()
 
 
 let test () =
-  let open Unicode in
-  let open Codepoint in
-  let s = Unicode.adopt_utf8s "hey 你好ä𤭢 ho" in
+  let open Ucs.Unicode in
+  let open Ucs.Codepoint in
+  let s = Ucs.Unicode.adopt_utf8s "hey 你好ä𤭢 ho" in
   assert ((utf8s_of_utf32s (utf32s_of_utf8s s)) = s);
 
   print_endline (string_of_utf32s (utf32s_of_utf8s s));
@@ -146,5 +146,5 @@ let test () =
       assert (utf32 = orig);
     )
 
-  ) Udb_data.data;
+  ) Ucs.Udb_data.data;
 ;;
