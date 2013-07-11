@@ -71,13 +71,13 @@ type character = UChar.t
  * :: Unicode Transfer Format interface
  *************************************************)
 
-module type UTF = sig
-  (** read a character at a position in memory, return the character and
-      the next read position. *)
+module type UTF_Scheme = sig
+  (** read a character at a position in memory, return the character
+      and the number of bytes written. *)
   val get : string -> int -> character * int
 
   (** write a character to memory in the transfer format; return the
-      next write position. *)
+      number of bytes written. *)
   val set : string -> int -> character -> int
 end
 
@@ -86,7 +86,7 @@ end
  * :: UTF-8
  *************************************************)
 
-module UTF_8 : UTF = struct
+module UTF_8_Scheme : UTF_Scheme = struct
 
   let get s i =
     let length = utf8_length s.[i] in
@@ -179,10 +179,10 @@ end
 
 
 (*************************************************
- * :: UTF-16
+ * :: UTF-16BE/LE
  *************************************************)
 
-module UTF_16BE : UTF = struct
+module UTF_16BE_Scheme : UTF_Scheme = struct
 
   let get s i =
     let lead =
@@ -221,7 +221,7 @@ module UTF_16BE : UTF = struct
 end
 
 
-module UTF_16LE : UTF = struct
+module UTF_16LE_Scheme : UTF_Scheme = struct
 
   let get s i =
     let trail =
@@ -261,10 +261,10 @@ end
 
 
 (*************************************************
- * :: UTF-32
+ * :: UTF-32BE/LE
  *************************************************)
 
-module UTF_32BE : UTF = struct
+module UTF_32BE_Scheme : UTF_Scheme = struct
 
   let get s i =
     let cp =
@@ -275,7 +275,7 @@ module UTF_32BE : UTF = struct
         Char.code s.[i + 3] lsl (8 * 0)
       )
     in
-    (cp, i + 4)
+    (cp, 4)
 
 
   let set s i cp =
@@ -284,12 +284,12 @@ module UTF_32BE : UTF = struct
     s.[i + 1] <- Char.chr (mask8 (cp lsr (8 * 2)));
     s.[i + 2] <- Char.chr (mask8 (cp lsr (8 * 1)));
     s.[i + 3] <- Char.chr (mask8 (cp lsr (8 * 0)));
-    i + 4
+    4
 
 end
 
 
-module UTF_32LE : UTF = struct
+module UTF_32LE_Scheme : UTF_Scheme = struct
 
   let get s i =
     let c =
@@ -300,7 +300,7 @@ module UTF_32LE : UTF = struct
         Char.code s.[i + 3] lsl (8 * 3)
       )
     in
-    (c, i + 4)
+    (c, 4)
 
 
   let set s i c =
@@ -309,9 +309,128 @@ module UTF_32LE : UTF = struct
     s.[i + 1] <- Char.chr (mask8 (c lsr (8 * 1)));
     s.[i + 2] <- Char.chr (mask8 (c lsr (8 * 2)));
     s.[i + 3] <- Char.chr (mask8 (c lsr (8 * 3)));
-    i + 4
+    4
 
 end
+
+
+(*************************************************
+ * :: Immutable Unicode strings
+ *************************************************)
+
+module type UTF_String = sig
+  type t = private string
+
+  val unsafe_adopt : string -> t
+
+  val compare : t -> t -> int
+  val equal : t -> t -> bool
+
+  val map : (character -> character) -> t -> t
+  val mapi : (int -> character -> character) -> t -> t
+
+  val fold_left : ('a -> character -> 'a) -> 'a -> t -> 'a
+end
+
+
+(*************************************************
+ * :: Mutable Unicode buffers
+ *************************************************)
+
+module type UTF_Buffer = sig
+  type t
+  type data
+
+  val create : int -> t
+
+  val add_char : t -> character -> unit
+
+  val contents : t -> data
+end
+
+
+(*************************************************
+ * :: Recursive definition of the above two
+ *************************************************)
+
+module type UTF = sig
+  module UString : UTF_String
+  module UBuffer : UTF_Buffer
+    with type data = UString.t
+end
+
+module UTF(UTF : UTF_Scheme) : UTF = struct
+  module rec UString : UTF_String = struct
+
+    type t = string
+
+    let unsafe_adopt s = s
+
+    let compare = Pervasives.compare
+    let equal = Pervasives.(=)
+
+    let rec fold_left i f x s =
+      if String.length s - i > 0 then
+        let (cp, advance) = UTF.get s i in
+        fold_left (i + advance) f (f x cp) s
+      else
+        x
+
+    let fold_left f x s =
+      fold_left 0 f x s
+
+    let map f s =
+      let mapped = UBuffer.create (String.length s) in
+      fold_left (fun () cp ->
+        UBuffer.add_char mapped (f cp)
+      ) () s;
+      UBuffer.contents mapped
+
+    let mapi f s =
+      let mapped = UBuffer.create (String.length s) in
+      ignore (fold_left (fun i cp ->
+        UBuffer.add_char mapped (f i cp);
+        i + 1
+      ) 0 s);
+      UBuffer.contents mapped
+
+  end
+  and UBuffer : UTF_Buffer with type data = UString.t = struct
+
+    type t = {
+      mutable buf : string;
+      mutable pos : int;
+    }
+
+    type data = UString.t
+
+    let create len = {
+      buf = String.make len '\xff';
+      pos = 0;
+    }
+
+    let add_char b cp =
+      (* Make sure at least 6 bytes fit in. That is
+       * the maximum for UTF-8 encoded code points. *)
+      if b.pos + 6 > String.length b.buf then (
+        let buf = String.create (String.length b.buf * 2 + 6) in
+        String.blit b.buf 0 buf 0 b.pos;
+        b.buf <- buf;
+      );
+      b.pos <- b.pos + UTF.set b.buf b.pos cp
+
+    let contents b =
+      UString.unsafe_adopt (String.sub b.buf 0 b.pos)
+
+  end
+end
+
+
+module UTF_8    = UTF(UTF_8_Scheme)
+module UTF_16BE = UTF(UTF_16BE_Scheme)
+module UTF_16LE = UTF(UTF_16LE_Scheme)
+module UTF_32BE = UTF(UTF_32BE_Scheme)
+module UTF_32LE = UTF(UTF_32LE_Scheme)
 
 
 (*************************************************
@@ -591,6 +710,43 @@ module Utf32String : UtfString = struct
 end
 
 
+let utf_test utf =
+  let module U = (val utf : UTF) in
+  let open U in
+
+  let buf = UBuffer.create 4 in
+  UBuffer.add_char buf (UChar.chr 0x263a);
+  UBuffer.add_char buf (UChar.chr 0x263a);
+  UBuffer.add_char buf (UChar.chr 0x263a);
+  UBuffer.add_char buf (UChar.chr 0x263a);
+
+  let s = UBuffer.contents buf in
+
+  String.iter (fun c ->
+    Printf.printf "%02x " (Char.code c)
+  ) (s :> string);
+  print_endline "--";
+
+  print_endline "fold_left";
+  UString.fold_left (fun n cp ->
+    Printf.printf "%d: %x\n" n (UChar.code cp);
+    n + 1
+  ) 0 s;
+
+  print_endline "map";
+  let s =
+    UString.map (fun cp ->
+      UChar.chr (UChar.code cp - 1)
+    ) s
+  in
+
+  UString.fold_left (fun n cp ->
+    Printf.printf "%d: %x\n" n (UChar.code cp);
+    n + 1
+  ) 0 s;
+;;
+
+
 let _ =
   let s = Utf32String.make 10 (UChar.chr 0x263a) in
   String.iter (fun c ->
@@ -616,4 +772,10 @@ let _ =
     Printf.printf "%d = %d: %x\n" i n (UChar.code c);
     n + 1
   ) s 0;
+
+  utf_test (module UTF_8 : UTF);
+  utf_test (module UTF_16BE : UTF);
+  utf_test (module UTF_16LE : UTF);
+  utf_test (module UTF_32BE : UTF);
+  utf_test (module UTF_32LE : UTF);
 ;;
