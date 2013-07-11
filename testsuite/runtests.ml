@@ -426,12 +426,20 @@ module UTF(UTF : UTF_Scheme) : UTF = struct
 end
 
 
+(*************************************************
+ * :: Instantiations for the different formats
+ *************************************************)
+
 module UTF_8    = UTF(UTF_8_Scheme)
 module UTF_16BE = UTF(UTF_16BE_Scheme)
 module UTF_16LE = UTF(UTF_16LE_Scheme)
 module UTF_32BE = UTF(UTF_32BE_Scheme)
 module UTF_32LE = UTF(UTF_32LE_Scheme)
 
+
+(*************************************************
+ * :: Unit tests.
+ *************************************************)
 
 let utf_test utf =
   let module U = (val utf : UTF) in
@@ -451,10 +459,10 @@ let utf_test utf =
   print_endline "--";
 
   print_endline "fold_left";
-  UString.fold_left (fun n cp ->
+  ignore (UString.fold_left (fun n cp ->
     Printf.printf "%d: %x\n" n (UChar.code cp);
     n + 1
-  ) 0 s;
+  ) 0 s);
 
   print_endline "map";
   let s =
@@ -463,10 +471,10 @@ let utf_test utf =
     ) s
   in
 
-  UString.fold_left (fun n cp ->
+  ignore (UString.fold_left (fun n cp ->
     Printf.printf "%d: %x\n" n (UChar.code cp);
     n + 1
-  ) 0 s;
+  ) 0 s);
 
   ()
 
