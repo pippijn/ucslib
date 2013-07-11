@@ -10,7 +10,7 @@ module Scheme : Encoding.Scheme = struct
   let name = "UTF-32BE"
 
   let get s i =
-    let cp =
+    let c =
       UChar.chr (
         Char.code s.[i + 0] lsl (8 * 3) +
         Char.code s.[i + 1] lsl (8 * 2) +
@@ -18,11 +18,11 @@ module Scheme : Encoding.Scheme = struct
         Char.code s.[i + 3] lsl (8 * 0)
       )
     in
-    (cp, 4)
+    (c, 4)
 
 
-  let set s i cp =
-    let cp = UChar.code cp in
+  let set s i c =
+    let cp = UChar.code c in
     s.[i + 0] <- Char.chr (mask8 (cp lsr (8 * 3)));
     s.[i + 1] <- Char.chr (mask8 (cp lsr (8 * 2)));
     s.[i + 2] <- Char.chr (mask8 (cp lsr (8 * 1)));

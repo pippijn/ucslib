@@ -22,11 +22,11 @@ module Scheme : Encoding.Scheme = struct
 
 
   let set s i c =
-    let c = UChar.code c in
-    s.[i + 0] <- Char.chr (mask8 (c lsr (8 * 0)));
-    s.[i + 1] <- Char.chr (mask8 (c lsr (8 * 1)));
-    s.[i + 2] <- Char.chr (mask8 (c lsr (8 * 2)));
-    s.[i + 3] <- Char.chr (mask8 (c lsr (8 * 3)));
+    let cp = UChar.code c in
+    s.[i + 0] <- Char.chr (mask8 (cp lsr (8 * 0)));
+    s.[i + 1] <- Char.chr (mask8 (cp lsr (8 * 1)));
+    s.[i + 2] <- Char.chr (mask8 (cp lsr (8 * 2)));
+    s.[i + 3] <- Char.chr (mask8 (cp lsr (8 * 3)));
     4
 
 end
