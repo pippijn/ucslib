@@ -1,4 +1,5 @@
 open CorePervasives
+open Util
 
 (*************************************************
  * :: Types
@@ -21,39 +22,6 @@ type utf32  = int
 type utf8s  = string
 type utf16s = int list
 type utf32s = int list
-
-
-(*************************************************
- * :: Unicode constants
- *************************************************)
-
-let lead_surrogate_min	= 0xd800
-let lead_surrogate_max	= 0xdbff
-let trail_surrogate_min	= 0xdc00
-let trail_surrogate_max	= 0xdfff
-let lead_offset		= lead_surrogate_min - (0x10000 lsr 10)
-let surrogate_offset	= 0x10000 - (lead_surrogate_min lsr 10) - trail_surrogate_min
-
-let code_point_max	= 0x10ffff
-
-
-(*************************************************
- * :: Helper functions
- *************************************************)
-
-let mask16 = (land) 0xffff
-
-let is_lead_surrogate code =
-  code >= lead_surrogate_min && code <= lead_surrogate_max
-
-let is_trail_surrogate code =
-  code >= trail_surrogate_min && code <= trail_surrogate_max
-
-let is_surrogate code =
-  code >= lead_surrogate_min && code <= trail_surrogate_max
-
-let is_trail_byte c =
-  Char.code c lsr 6 = 2
 
 
 
