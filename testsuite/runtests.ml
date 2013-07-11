@@ -72,6 +72,8 @@ type character = UChar.t
  *************************************************)
 
 module type UTF_Scheme = sig
+  val name : string
+
   (** read a character at a position in memory, return the character
       and the number of bytes written. *)
   val get : string -> int -> character * int
@@ -87,6 +89,8 @@ end
  *************************************************)
 
 module UTF_8_Scheme : UTF_Scheme = struct
+
+  let name = "UTF-8"
 
   let get s i =
     let length = utf8_length s.[i] in
@@ -184,6 +188,8 @@ end
 
 module UTF_16BE_Scheme : UTF_Scheme = struct
 
+  let name = "UTF-16BE"
+
   let get s i =
     let lead =
       Char.code s.[i + 0] lsl (8 * 1) +
@@ -222,6 +228,8 @@ end
 
 
 module UTF_16LE_Scheme : UTF_Scheme = struct
+
+  let name = "UTF-16LE"
 
   let get s i =
     let trail =
@@ -266,6 +274,8 @@ end
 
 module UTF_32BE_Scheme : UTF_Scheme = struct
 
+  let name = "UTF-32BE"
+
   let get s i =
     let cp =
       UChar.chr (
@@ -290,6 +300,8 @@ end
 
 
 module UTF_32LE_Scheme : UTF_Scheme = struct
+
+  let name = "UTF-32LE"
 
   let get s i =
     let c =
@@ -353,13 +365,18 @@ end
  * :: Recursive definition of the above two
  *************************************************)
 
-module type UTF = sig
+module type Encoding = sig
+  val name : string
+
   module UString : UTF_String
   module UBuffer : UTF_Buffer
     with type data = UString.t
 end
 
-module UTF(UTF : UTF_Scheme) : UTF = struct
+module UTF(UTF : UTF_Scheme) : Encoding = struct
+
+  let name = UTF.name
+
   module rec UString : UTF_String = struct
 
     type t = string
@@ -442,12 +459,14 @@ module UTF_32LE = UTF(UTF_32LE_Scheme)
  *************************************************)
 
 let utf_test utf =
-  let module U = (val utf : UTF) in
+  let module U = (val utf : Encoding) in
   let open U in
+
+  Printf.printf "test encoding: %s\n" U.name;
 
   let buf = UBuffer.create 4 in
   UBuffer.add_char buf (UChar.chr 0x263a);
-  UBuffer.add_char buf (UChar.chr 0x263a);
+  UBuffer.add_char buf (UChar.chr 0x1263a);
   UBuffer.add_char buf (UChar.chr 0x263a);
   UBuffer.add_char buf (UChar.chr 0x263a);
 
@@ -481,9 +500,9 @@ let utf_test utf =
 
 let _ =
   List.iter utf_test [
-    (module UTF_8 : UTF);
-    (module UTF_16BE : UTF);
-    (module UTF_16LE : UTF);
-    (module UTF_32BE : UTF);
-    (module UTF_32LE : UTF);
+    (module UTF_8 : Encoding);
+    (module UTF_16BE : Encoding);
+    (module UTF_16LE : Encoding);
+    (module UTF_32BE : Encoding);
+    (module UTF_32LE : Encoding);
   ]
