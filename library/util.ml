@@ -40,3 +40,8 @@ let utf8_length c =
   if d >= 0xf8 && d < 0xfc then 5 else
   if d >= 0xfc && d < 0xfe then 6 else
   invalid_arg "utf8_length"
+
+
+let validate_length s i length =
+  if ByteString.length s - i < length then
+    invalid_arg "invalid encoded unicode string"

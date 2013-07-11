@@ -48,6 +48,12 @@ let utf_test utf =
 
 
 let _ =
+  let s = UTF_8.Encoding.String.adopt "hel\xe2\x98\xba" in
+  ignore (UTF_8.Encoding.String.fold_left (fun n cp ->
+    Printf.printf "%d: %x\n" n (UChar.code cp);
+    n + 1
+  ) 0 s);
+
   List.iter utf_test [
     (module UTF_8.Encoding : Encoding.S);
     (module UTF_16BE.Encoding : Encoding.S);

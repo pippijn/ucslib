@@ -26,6 +26,7 @@ end
 module type String = sig
   type t = private string
 
+  val adopt : string -> t
   val unsafe_adopt : string -> t
 
   val compare : t -> t -> int

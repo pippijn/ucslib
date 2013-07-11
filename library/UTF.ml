@@ -10,8 +10,6 @@ module Make(UTF : Encoding.Scheme) : Encoding.S = struct
 
     type t = string
 
-    let unsafe_adopt s = s
-
     let compare = Pervasives.compare
     let equal = Pervasives.(=)
 
@@ -39,6 +37,12 @@ module Make(UTF : Encoding.Scheme) : Encoding.S = struct
         i + 1
       ) 0 s);
       Buffer.contents mapped
+
+    let unsafe_adopt s = s
+
+    let adopt s =
+      fold_left (fun () _ -> ()) () s;
+      s
 
   end
   and Buffer : Encoding.Buffer with type data = String.t = struct

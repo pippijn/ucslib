@@ -11,6 +11,8 @@ module Scheme : Encoding.Scheme = struct
   let get s i =
     let length = utf8_length s.[i] in
 
+    validate_length s i length;
+
     let cp =
       match length with
       | 1 ->

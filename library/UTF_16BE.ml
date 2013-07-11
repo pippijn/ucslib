@@ -15,9 +15,11 @@ module Scheme : Encoding.Scheme = struct
       Char.code s.[i + 1] lsl (8 * 0)
     in
 
-    if not (is_lead_surrogate lead) then
+    if not (is_lead_surrogate lead) then (
+      validate_length s i 2;
       (UChar.chr lead, 2)
-    else
+    ) else (
+      validate_length s i 4;
       let trail =
         Char.code s.[i + 2] lsl (8 * 1) +
         Char.code s.[i + 3] lsl (8 * 0)
@@ -25,6 +27,7 @@ module Scheme : Encoding.Scheme = struct
       (UChar.chr (
         ((lead - 0xd800) * 0x400) + (trail - 0xdc00) + 0x10000
       ), 4)
+    )
 
 
   let set s i cp =

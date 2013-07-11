@@ -10,6 +10,7 @@ module Scheme : Encoding.Scheme = struct
   let name = "UTF-32BE"
 
   let get s i =
+    validate_length s i 4;
     let c =
       UChar.chr (
         Char.code s.[i + 0] lsl (8 * 3) +
