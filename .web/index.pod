@@ -1,0 +1,7 @@
+=head1 UCS Library
+
+This is a small OCaml library, which aims to provide an abstraction over the
+various Unicode Transfer Formats, giving a uniform 32 bit Universal Character
+Set (UCS-4) interface.
+
+L<Git repository|https://github.com/pippijn/ucslib>
