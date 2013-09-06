@@ -12,6 +12,6 @@ install Program ".DEFAULT" [
   (* Library dependencies *)
   OCamlRequires [
     "batteries";
-    "ucs";
+    "ucslib";
   ];
 ]

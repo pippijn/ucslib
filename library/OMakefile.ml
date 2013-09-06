@@ -1,6 +1,6 @@
 install Package ".DEFAULT" [
   (* Target *)
-  Name		"ucs";
+  Name		"ucslib";
   Description	"Small unicode library";
   Version	"0.1";
 

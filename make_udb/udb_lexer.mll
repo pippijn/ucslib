@@ -1,5 +1,5 @@
 {
-  open Ucs.Codepoint
+  open Ucslib.Codepoint
 
   let empty = {
     code = 0;

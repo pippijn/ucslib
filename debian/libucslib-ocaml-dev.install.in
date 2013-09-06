@@ -1,3 +1,7 @@
+/usr/bin/make_udb
+/usr/bin/make_udb.byte
+/usr/bin/make_udb.native
+
 @OCamlStdlibDir@/ucslib/*.a
 @OCamlStdlibDir@/ucslib/*.cm[ix]
 @OCamlStdlibDir@/ucslib/*.cmxa

@@ -4,7 +4,7 @@ open Codepoint
 
 let data = [|
 ";
-  List.iter (fun cp -> Printf.fprintf out "  %s;\n" (Ucs.Udb_print.string_of_codepoint cp)) udb;
+  List.iter (fun cp -> Printf.fprintf out "  %s;\n" (Ucslib.Udb_print.string_of_codepoint cp)) udb;
   output_string out "|]\n"
 
 
@@ -18,7 +18,7 @@ let data : Codepoint.t array = Marshal.from_string \"%s\" 0
 
 
 let csv out udb =
-  List.iter (fun cp -> Printf.fprintf out "%s\n" (Ucs.Udb_print.csv_of_codepoint cp)) udb
+  List.iter (fun cp -> Printf.fprintf out "%s\n" (Ucslib.Udb_print.csv_of_codepoint cp)) udb
 
 
 let () =

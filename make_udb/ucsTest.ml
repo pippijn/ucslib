@@ -18,8 +18,8 @@ let show _ _ = ()
 
 
 let test_Unicode () =
-  let open Ucs.Unicode in
-  let open Ucs.Codepoint in
+  let open Ucslib.Unicode in
+  let open Ucslib.Codepoint in
 
   Array.iter (fun c ->
     if c.code < 0xd800 || c.code > 0xf8ff then (
@@ -142,12 +142,12 @@ let test_Unicode () =
       assert (utf32 = orig);
     )
 
-  ) Ucs.Udb_data.data
+  ) Ucslib.Udb_data.data
 
 
 let test () =
-  let open Ucs.Unicode in
-  let s = Ucs.Unicode.adopt_utf8s "hey 你好ä𤭢 ho" in
+  let open Ucslib.Unicode in
+  let s = Ucslib.Unicode.adopt_utf8s "hey 你好ä𤭢 ho" in
   assert ((utf8s_of_utf32s (utf32s_of_utf8s s)) = s);
 
   print_endline (string_of_utf32s (utf32s_of_utf8s s));

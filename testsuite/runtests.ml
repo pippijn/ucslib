@@ -1,6 +1,6 @@
 open_out "testsuite.rst";;
 
-open Ucs
+open Ucslib
 
 
 (*************************************************
