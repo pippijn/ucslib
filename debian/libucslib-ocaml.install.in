@@ -1,0 +1,3 @@
+@OCamlStdlibDir@/ucslib/META
+@OCamlStdlibDir@/ucslib/*.cma
+@OCamlStdlibDir@/ucslib/*.cmxs

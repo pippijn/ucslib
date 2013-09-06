@@ -1,0 +1,3 @@
+@OCamlStdlibDir@/ucslib/*.a
+@OCamlStdlibDir@/ucslib/*.cm[ix]
+@OCamlStdlibDir@/ucslib/*.cmxa
