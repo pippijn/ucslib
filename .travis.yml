@@ -2,10 +2,13 @@ language: c
 script: dpkg-buildpackage -b -us -uc
 
 install:
-   - sudo apt-get install omake noweb valgrind dh-ocaml libbatteries-ocaml-dev libsexplib-camlp4-dev libderiving-ocsigen-ocaml-dev
+   # GitHub dependencies.
+   - sudo apt-get install devscripts equivs
    - wget https://raw.github.com/pippijn/obuild/master/script/travis-depend?$(date +%s) -O travis-depend
    - chmod +x travis-depend
-   - ./travis-depend baselib
+   - ./travis-depend obuild baselib
+   # Package dependencies.
+   - sudo mk-build-deps -ir
 
 # whitelist
 branches:
