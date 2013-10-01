@@ -2,8 +2,6 @@ Source: ocaml-ucslib
 Section: ocaml
 Priority: optional
 Maintainer: Pippijn van Steenhoven <pip88nl@gmail.com>
-Uploaders: 
-  Pippijn van Steenhoven <pip88nl@gmail.com>
 Build-Depends:
   debhelper (>= 8.0.0),
   obuild,
@@ -23,13 +21,17 @@ Depends: ${ocaml:Depends}, ${misc:Depends}
 Provides: ${ocaml:Provides}
 Recommends: ocaml-findlib
 Description: Unicode Library
- Stuff.
+ Small Unicode library with support for UTF-8, UTF-16LE, UTF-16BE, UTF32-LE,
+ and UTF32-BE. All encodings have a unified interface with only their internal
+ representation being different.
 
 Package: libucslib-ocaml
 Architecture: any
 Depends: ${ocaml:Depends}, ${misc:Depends}, ${shlibs:Depends}
 Provides: ${ocaml:Provides}
 Description: Unicode Library
- Stuff.
+ Small Unicode library with support for UTF-8, UTF-16LE, UTF-16BE, UTF32-LE,
+ and UTF32-BE. All encodings have a unified interface with only their internal
+ representation being different.
  .
  This package contains the shared runtime libraries.
