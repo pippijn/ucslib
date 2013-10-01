@@ -2,6 +2,9 @@ language: c
 script: dpkg-buildpackage -b -us -uc
 
 install:
+   # Add PPA to download from.
+   - sudo apt-add-repository -y ppa:pippijn/ppa
+   - sudo apt-get update
    # GitHub dependencies.
    - sudo apt-get install devscripts equivs
    - wget https://raw.github.com/pippijn/obuild/master/script/travis-depend?$(date +%s) -O travis-depend

@@ -5,15 +5,13 @@ Maintainer: Pippijn van Steenhoven <pip88nl@gmail.com>
 Uploaders: 
   Pippijn van Steenhoven <pip88nl@gmail.com>
 Build-Depends:
+  debhelper (>= 8.0.0),
+  obuild,
+  dh-ocaml,
   ocaml-nox (>= 3.12),
   ocaml-findlib,
-  omake,
-  valgrind,
-  noweb,
   libbaselib-ocaml-dev,
-  libsexplib-camlp4-dev,
-  dh-ocaml,
-  debhelper (>= 8.0.0)
+  libsexplib-camlp4-dev
 Standards-Version: 3.9.2
 Homepage: https://github.com/pippijn/ucslib
 Vcs-Git: git://github.com/pippijn/ucslib
@@ -24,16 +22,14 @@ Architecture: any
 Depends: ${ocaml:Depends}, ${misc:Depends}
 Provides: ${ocaml:Provides}
 Recommends: ocaml-findlib
-Description: Common library for OCaml projects
- This library contains some common modules I use for
- most of my projects.
+Description: Unicode Library
+ Stuff.
 
 Package: libucslib-ocaml
 Architecture: any
 Depends: ${ocaml:Depends}, ${misc:Depends}, ${shlibs:Depends}
 Provides: ${ocaml:Provides}
-Description: Common library for OCaml projects
- This library contains some common modules I use for
- most of my projects.
+Description: Unicode Library
+ Stuff.
  .
  This package contains the shared runtime libraries.
