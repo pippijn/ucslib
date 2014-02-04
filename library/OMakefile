@@ -1,0 +1,26 @@
+Name = ucslib
+Description = Small Unicode library
+Version = 0.1
+
+OCaml-Sources[] =
+  ByteString
+  Codepoint
+  Encoding
+  UChar
+  Udb
+  Udb_data
+  Udb_print
+  Unicode
+  UTF
+  UTF_8
+  UTF_16BE
+  UTF_16LE
+  UTF_32BE
+  UTF_32LE
+  Util
+
+OCaml-Requires[] =
+  corelib
+
+TARGET = $(ocaml-pack-install)
+.DEFAULT: $(TARGET)

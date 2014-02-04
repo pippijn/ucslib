@@ -1,0 +1,13 @@
+Name		= make_udb
+
+OCaml-Sources[] =
+  Make_udb
+  UcsTest
+  Udb_lexer
+
+OCaml-Requires[] =
+  batteries
+  ucslib
+
+TARGET = $(program-install)
+.DEFAULT: $(TARGET)
