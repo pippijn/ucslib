@@ -21,6 +21,7 @@ OCaml-Sources[] =
 
 OCaml-Requires[] =
   corelib
+  deriving-ocsigen
 
 TARGET = $(ocaml-pack-install)
 .DEFAULT: $(TARGET)

@@ -26,6 +26,9 @@ end
 module type String = sig
   type t = private string
 
+  module Show_t : Deriving_Show.Show
+    with type a = t
+
   val adopt : string -> t
   val unsafe_adopt : string -> t
 

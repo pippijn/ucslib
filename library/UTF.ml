@@ -10,6 +10,10 @@ module Make(UTF : Encoding.Scheme) : Encoding.S = struct
 
     type t = string
 
+    module Show_t : Deriving_Show.Show
+      with type a = t
+        = Deriving_Show.Show_string
+
     let compare = Pervasives.compare
     let equal = Pervasives.(=)
 
